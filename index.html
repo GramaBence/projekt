@@ -1,0 +1,245 @@
+<!DOCTYPE html>
+<html lang="hu">
+<head>
+    <meta charset="UTF-8">
+    <meta name="viewport" content="width=device-width, initial-scale=1.0">
+    <title>AI ZOOM ARCHITECT V27.1</title>
+    <link href="https://fonts.googleapis.com/css2?family=Unbounded:wght@900&family=Space+Grotesk:wght@300;700&display=swap" rel="stylesheet">
+    <style>
+        :root { 
+            --bg: #030303; 
+            --accent: #00ffaa; 
+            --line: rgba(0, 255, 170, 0.1); 
+            --glass: rgba(255, 255, 255, 0.03);
+        }
+        
+        body, html { margin: 0; padding: 0; height: 100%; width: 100%; background: var(--bg); color: #fff; font-family: 'Space Grotesk', sans-serif; overflow: hidden; }
+        
+        .bg-grid { position: fixed; width: 100vw; height: 100vh; background-image: linear-gradient(var(--line) 1px, transparent 1px), linear-gradient(90deg, var(--line) 1px, transparent 1px); background-size: 60px 60px; z-index: -1; opacity: 0.2; }
+        .nav-ui { position: fixed; top: 50%; right: 40px; transform: translateY(-50%); display: flex; flex-direction: column; gap: 15px; z-index: 1000; }
+        .nav-dot { width: 10px; height: 10px; border: 1px solid rgba(255,255,255,0.4); border-radius: 50%; cursor: pointer; transition: 0.4s cubic-bezier(0.175, 0.885, 0.32, 1.275); }
+        .nav-dot.active { background: var(--accent); border-color: var(--accent); height: 40px; border-radius: 10px; box-shadow: 0 0 15px var(--accent); }
+        .viewport { width: 100vw; height: 100vh; perspective: 1500px; }
+        .track { display: flex; width: 1000vw; height: 100%; transition: transform 0.9s cubic-bezier(0.19, 1, 0.22, 1); will-change: transform; }
+        .slide { width: 100vw; height: 100vh; flex-shrink: 0; position: relative; display: flex; align-items: center; justify-content: center; overflow: hidden; }
+        .box { 
+            position: absolute; border: 1px solid rgba(255,255,255,0.2); display: flex; align-items: center; justify-content: center; 
+            background-color: var(--glass); 
+            background-size: cover;
+            background-position: center;
+            backdrop-filter: blur(8px); text-transform: uppercase; 
+            font-size: 11px; letter-spacing: 4px; font-weight: 700; overflow: hidden;
+            transition: all 0.6s cubic-bezier(0.2, 1, 0.3, 1);
+            box-shadow: 0 10px 30px rgba(0,0,0,0.5);
+        }
+
+        .type-img { border-color: rgba(255,255,255,0.1); }
+        .type-img:hover { border-color: #fff; transform: scale(1.02); }
+        .type-video { 
+            border: 1px dashed var(--accent); 
+            color: var(--accent); 
+            cursor: pointer; 
+            z-index: 5;
+            background-image: none !important;
+            background: linear-gradient(45deg, rgba(0,255,170,0.05), transparent);
+        }
+        .type-video::before {
+            content: '';
+            position: absolute;
+            width: 40px; height: 40px;
+            border-left: 2px solid var(--accent);
+            border-top: 2px solid var(--accent);
+            top: 10px; left: 10px;
+        }
+        .type-video::after { 
+            content: 'VIDEO_SLOT'; 
+            position: absolute; 
+            font-size: 9px; 
+            bottom: 10px; 
+            right: 10px; 
+            background: var(--accent); 
+            color: #000; 
+            padding: 3px 8px; 
+            font-weight: 900;
+        }
+        .type-video:hover {
+            box-shadow: 0 0 30px rgba(0,255,170,0.2);
+            background: rgba(0,255,170,0.1);
+        }
+
+        .box.zoomed {
+            position: fixed !important;
+            top: 5vh !important; left: 5vw !important;
+            width: 90vw !important; height: 90vh !important;
+            transform: translate(0, 0) rotate(0) !important;
+            z-index: 9999;
+            background-color: #080808;
+            border-color: var(--accent);
+            font-size: 1.5rem;
+        }
+
+        .overlay {
+            position: fixed; top: 0; left: 0; width: 100%; height: 100%;
+            background: rgba(0,0,0,0.9); z-index: 9998;
+            opacity: 0; pointer-events: none; transition: 0.5s;
+            backdrop-filter: blur(10px);
+        }
+        .overlay.active { opacity: 1; pointer-events: all; }
+
+        h1 { font-family: 'Unbounded'; font-size: clamp(3rem, 10vw, 12rem); margin: 0; line-height: 0.8; mix-blend-mode: difference; z-index: 10; pointer-events: none; }
+        .num { position: absolute; font-family: 'Unbounded'; font-size: 25vw; opacity: 0.05; z-index: -1; pointer-events: none; }
+
+        .diagonal-split { clip-path: polygon(0 0, 100% 0, 85% 100%, 0% 100%); }
+
+        @media (max-width: 768px) {
+            .nav-ui { right: 15px; }
+            h1 { font-size: 15vw; }
+        }
+    </style>
+</head>
+<body>
+
+    <div class="bg-grid"></div>
+    <div class="overlay" id="overlay"></div>
+    <div class="nav-ui" id="dots"></div>
+
+    <div class="viewport">
+        <div class="track" id="track">
+            
+            <section class="slide">
+                <div class="num">01</div>
+                <h1>CORE<br><span style="color: var(--accent)">MIND</span></h1>
+                <div class="box type-img" style="width: 30vw; height: 60vh; left: 10%; top: 15%; transform: rotate(-3deg); background-image: url('https://images.unsplash.com/photo-1614728263952-84ea256f9679?q=80&w=1200&auto=format&fit=crop');">NEURAL_NET_V1</div>
+                <div class="box type-video" style="width: 25vw; height: 30vh; right: 12%; bottom: 15%;">SYSTEM_LINK_01</div>
+            </section>
+
+            <section class="slide">
+                <div class="num">02</div>
+                <div class="box type-img diagonal-split" style="width: 55vw; height: 100%; left: 0; top: 0; background-image: url('https://images.unsplash.com/photo-1480714378408-67cf0d13bc1b?q=80&w=1200&auto=format&fit=crop');">URBAN_PULSE</div>
+                <h1 style="text-align: right; width: 85%;">DATA<br>STREAM</h1>
+                <div class="box type-video" style="width: 18vw; height: 18vw; border-radius: 50%; right: 8%; top: 12%;">NODE_X_STREAM</div>
+            </section>
+
+            <section class="slide">
+                <div class="num">03</div>
+                <div class="box type-img" style="width: 45vw; height: 45vh; z-index: 5; background-image: url('https://images.unsplash.com/photo-1550751827-4bd374c3f58b?q=80&w=1200&auto=format&fit=crop');">LOGIC_GATE_MOD</div>
+                <div class="box type-video" style="width: 20vw; height: 55vh; left: 10%; transform: translateZ(80px);">DEEP_LEARN_AUX</div>
+                <h1 style="position: absolute; bottom: 8%; left: 5%;">LOGIC</h1>
+            </section>
+
+            <section class="slide">
+                <div class="num">04</div>
+                <div class="box type-img" style="width: 85vw; height: 20vh; top: 12%; background-image: url('https://images.unsplash.com/photo-1486406146926-c627a92ad1ab?q=80&w=1400&auto=format&fit=crop');">INFRA_STRUC</div>
+                <h1 style="font-size: 18vw; color: var(--accent); opacity: 0.8;">NEURAL</h1>
+                <div class="box type-video" style="width: 35vw; height: 45vh; bottom: 8%; right: 8%;">INT_FACE_04</div>
+            </section>
+
+            <section class="slide">
+                <div class="num">05</div>
+                <div class="box type-video" style="width: 65vw; height: 65vh;">BLOCKCHAIN_AI_CORE</div>
+                <h1 style="position: absolute; mix-blend-mode: overlay; letter-spacing: 20px;">GHOST</h1>
+            </section>
+
+            <section class="slide">
+                <div class="num">06</div>
+                <div class="box type-img" style="width: 100%; height: 48%; top: 0; background-image: url('https://images.unsplash.com/photo-1531746790731-6c087fecd05a?q=80&w=1200&auto=format&fit=crop');">ROBOTICS_A1</div>
+                <div class="box type-video" style="width: 100%; height: 48%; bottom: 0;">AUTO_MATION_X</div>
+                <h1 style="background: var(--bg); padding: 15px 40px; border-left: 5px solid var(--accent);">HYBRID</h1>
+            </section>
+
+            <section class="slide">
+                <div class="num">07</div>
+                <div style="display: grid; grid-template-columns: repeat(3, 1fr); gap: 20px; width: 85%; height: 65%;">
+                    <div class="box type-img" style="position: relative; width: 100%; height: 100%; background-image: url('https://images.unsplash.com/photo-1605810230434-7631ac76ec81?q=80&w=800&auto=format&fit=crop');">SYNC_A</div>
+                    <div class="box type-video" style="position: relative; width: 100%; height: 100%;">SYNC_B</div>
+                    <div class="box type-img" style="position: relative; width: 100%; height: 100%; background-image: url('https://images.unsplash.com/photo-1518770660439-4636190af475?q=80&w=800&auto=format&fit=crop');">SYNC_C</div>
+                </div>
+                <h1 style="bottom: 5%; right: 5%; font-size: 6vw; position: absolute;">SYNC</h1>
+            </section>
+
+            <section class="slide">
+                <div class="num">08</div>
+                <div class="box type-img" style="width: 25vw; height: 100vh; left: 0; opacity: 0.6; background-image: url('https://images.unsplash.com/photo-1478760329108-5c3ed9d495a0?q=80&w=800&auto=format&fit=crop');"></div>
+                <div class="box type-img" style="width: 25vw; height: 100vh; right: 0; opacity: 0.6; background-image: url('https://images.unsplash.com/photo-1451187580459-43490279c0fa?q=80&w=800&auto=format&fit=crop');"></div>
+                <div class="box type-video" style="width: 45vw; height: 45vh; border-radius: 5px;">CORE_VIEW_MASTER</div>
+                <h1 style="letter-spacing: -5px;">CENTRAL</h1>
+            </section>
+
+            <section class="slide" style="background: var(--accent);">
+                <div class="num" style="color: #000; opacity: 0.15;">09</div>
+                <h1 style="color: #000;">VOID</h1>
+                <div class="box type-video" style="width: 35vw; height: 35vw; border-color: #000; color: #000; transform: rotate(45deg);">MATRIX_VOID</div>
+            </section>
+
+            <section class="slide">
+                <div class="num">10</div>
+                <div style="text-align: left; width: 70%;">
+                    <h1 style="font-size: 6vw;">> SYSTEM_OFF</h1>
+                    <div class="box type-img" style="position: relative; width: 400px; height: 60px; margin: 30px 0; background-image: url('https://images.unsplash.com/photo-1516110833967-0b5716ca1387?q=80&w=800&auto=format&fit=crop');">EXIT_TERMINAL</div>
+                    <div class="box type-video" style="position: relative; width: 120px; height: 120px; border-radius: 50%;">END</div>
+                </div>
+            </section>
+
+        </div>
+    </div>
+
+    <script>
+        let current = 0;
+        const total = 10;
+        const track = document.getElementById('track');
+        const dotsContainer = document.getElementById('dots');
+        const overlay = document.getElementById('overlay');
+
+        for(let i=0; i<total; i++) {
+            const dot = document.createElement('div');
+            dot.className = 'nav-dot' + (i === 0 ? ' active' : '');
+            dot.onclick = () => goTo(i);
+            dotsContainer.appendChild(dot);
+        }
+
+        function goTo(idx) {
+            current = idx;
+            track.style.transform = `translateX(-${current * 100}vw)`;
+            document.querySelectorAll('.nav-dot').forEach((d, i) => d.classList.toggle('active', i === current));
+        }
+        document.querySelectorAll('.box').forEach(box => {
+            box.onclick = function(e) {
+                e.stopPropagation();
+                if (this.classList.contains('zoomed')) {
+                    closeZoom();
+                } else {
+                    this.classList.add('zoomed');
+                    overlay.classList.add('active');
+                }
+            };
+        });
+
+        function closeZoom() {
+            const zoomedBox = document.querySelector('.box.zoomed');
+            if (zoomedBox) zoomedBox.classList.remove('zoomed');
+            overlay.classList.remove('active');
+        }
+
+        overlay.onclick = closeZoom;
+        document.onkeydown = (e) => {
+            if(e.key === "Escape") closeZoom();
+            if(document.querySelector('.zoomed')) return; 
+            
+            if(e.key === "ArrowRight") goTo(Math.min(current + 1, total - 1));
+            if(e.key === "ArrowLeft") goTo(Math.max(current - 1, 0));
+        };
+        let isScrolling = false;
+        window.addEventListener('wheel', (e) => {
+            if(document.querySelector('.zoomed') || isScrolling) return;
+
+            if (Math.abs(e.deltaY) > 50) {
+                isScrolling = true;
+                if (e.deltaY > 0) goTo(Math.min(current + 1, total - 1));
+                else goTo(Math.max(current - 1, 0));
+                
+                setTimeout(() => { isScrolling = false; }, 1000); 
+            }
+        }, { passive: true });
+    </script>
+</body>
+</html>
