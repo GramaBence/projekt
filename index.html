@@ -1,0 +1,589 @@
+<!DOCTYPE html>
+<html lang="hu">
+<head>
+    <meta charset="UTF-8">
+    <meta name="viewport" content="width=device-width, initial-scale=1.0">
+<title>🤖 Mesterséges Intelligencia a Diákok Szemmel v3.1 - Komoly Kiadás</title>
+    <meta name="description" content="Izgalmas prezentáció az AI-ról diák szemmel: tools, storyk, quiz score, swipe/fullscreen!">
+    <meta property="og:title" content="AI Diák Szemmel v3.0">
+    <meta property="og:description" content="Turbózd fel tanulásod AI-val! 10 slide, quiz-ek, storyk.">
+    <meta property="og:image" content="https://images.unsplash.com/photo-1620712943543-bcc4688e7485?auto=format&fit=crop&w=1200&q=80">
+    <meta name="twitter:card" content="summary_large_image">
+    <link rel="manifest" href="manifest.json">
+    <link rel="apple-touch-icon" href="data:image/svg+xml;base64,PHN2ZyB3aWR0aD0iMTkyIiBoZWlnaHQ9IjE5MiIgdmlld0JveD0iMCAwIDE5MiAxOTIiIGZpbGw9Im5vbmUiIHhtbG5zPSJodHRwOi8vd3d3LnczLm9yZy8yMDAwL3N2ZyI+CjxjaXJjbGUgY3g9Ijk2IiBjeT0iOTYiIHI9Ijk2IiBmaWxsPSIjMDBmZmFhIi8+Cjx0ZXh0IHg9Ijk2IiB5PSIxMDkiIGZvbnQtZmFtaWx5PSJBcmlhbCIgZm9udC1zaXplPSIzMiIgZm9udC13ZWlnaHQ9ImJvbGQiIGZpbGw9IiMwMzAzMDMiIHRleHQtYW5jaG9yPSJtaWRkbGUiIGR5PSIuM2VtIj5BQTwvdGV4dD4KPC9zdmc+">
+    <link rel="preconnect" href="https://fonts.googleapis.com">
+    <link rel="preconnect" href="https://images.unsplash.com">
+    <link rel="preconnect" href="https://www.youtube.com">
+    <script>if ('serviceWorker' in navigator) { window.addEventListener('load', () => navigator.serviceWorker.register('./sw.js')); }</script>
+    <link href="https://fonts.googleapis.com/css2?family=Unbounded:wght@700&family=Space+Grotesk:wght@300;500&display=swap" rel="stylesheet">
+    <style>
+.partner-badge {
+    position: absolute;
+    top: 30px;
+    right: 30px;
+    width: 120px;
+    height: 120px;
+    z-index: 10;
+    background: rgba(255, 255, 255, 0.1);
+    backdrop-filter: blur(10px);
+    border-radius: 50%;
+    padding: 10px;
+    border: 1px solid rgba(0, 255, 170, 0.3);
+    box-shadow: 0 0 20px rgba(0, 255, 170, 0.2);
+    transition: transform 0.3s ease;
+}
+
+.partner-badge:hover {
+    transform: scale(1.1) rotate(5deg);
+}
+
+.partner-badge img {
+    width: 100%;
+    height: 100%;
+    object-fit: contain;
+}
+
+        :root {
+            --accent: #00ffaa; /* Neon zöld */
+            --bg: #030303;    /* Mélyfekete */
+            --card-bg: rgba(20, 20, 20, 0.9); /* Sötétszürke kártya */
+            --text: #f0f0f0;
+        }
+
+        * { box-sizing: border-box; }
+
+        body, html {
+            margin: 0; padding: 0;
+            background: var(--bg);
+            color: var(--text);
+            font-family: 'Space Grotesk', sans-serif;
+            overflow: hidden; /* PPT stílusú fix nézet */
+        }
+
+        /* Háttér háló */
+        .grid {
+            position: fixed; top: 0; left: 0; width: 100%; height: 100%;
+            background-image: linear-gradient(rgba(0, 255, 170, 0.03) 1px, transparent 1px),
+                              linear-gradient(90deg, rgba(0, 255, 170, 0.03) 1px, transparent 1px);
+            background-size: 60px 60px;
+            z-index: -1;
+        }
+
+        .presentation-container {
+            width: 100vw; height: 100vh;
+            display: flex;
+            transition: transform 0.8s cubic-bezier(0.85, 0, 0.15, 1);
+        }
+
+        .slide {
+            min-width: 100vw; height: 100vh;
+            display: flex; flex-direction: column;
+            justify-content: center; align-items: center;
+            padding: 50px;
+            position: relative;
+        }
+
+        /* PPT Kártya dizájn */
+        .card {
+            background: var(--card-bg);
+            backdrop-filter: blur(15px);
+            border: 1px solid rgba(0, 255, 170, 0.1);
+            border-left: 5px solid var(--accent);
+            border-radius: 20px;
+            padding: 50px;
+            max-width: 1100px;
+            width: 90%;
+            box-shadow: 0 30px 60px rgba(0,0,0,0.7);
+            transform: translateY(40px);
+            opacity: 0;
+            transition: 0.7s 0.3s ease-out;
+        }
+
+        .active-slide .card {
+            transform: translateY(0);
+            opacity: 1;
+        }
+
+        h1, h2 {
+            font-family: 'Unbounded', sans-serif;
+            margin: 0 0 25px 0;
+            color: var(--accent);
+            text-transform: uppercase;
+        }
+
+        h1 { font-size: 4.2rem; letter-spacing: -3px; line-height: 1; }
+        h2 { font-size: 2.8rem; }
+
+        .content-split {
+            display: grid;
+            grid-template-columns: 1fr 1fr; /* Egyenlő arány */
+            gap: 50px;
+            align-items: center;
+            margin-top: 30px;
+        }
+
+        .text-block {
+            font-size: 1.35rem;
+            line-height: 1.7;
+            color: #d0d0d0;
+        }
+
+        .media-block {
+            display: flex; flex-direction: column; gap: 20px;
+        }
+
+        .img-container {
+            width: 100%; height: 280px;
+            border-radius: 15px; overflow: hidden;
+            border: 1px solid rgba(0, 255, 170, 0.3);
+            box-shadow: 0 10px 30px rgba(0,255,170,0.1);
+        }
+
+        .img-container img { width: 100%; height: 100%; object-fit: cover; filter: contrast(1.1); transition: transform 0.3s ease; }
+
+        .img-container:hover img { transform: scale(1.05); }
+
+        /* Animációk */
+        @keyframes glow {
+            0%, 100% { text-shadow: 0 0 5px var(--accent); }
+            50% { text-shadow: 0 0 20px var(--accent), 0 0 30px var(--accent); }
+        }
+
+        h1, h2 { animation: glow 2s ease-in-out infinite; }
+
+        .card { animation: slideIn 0.8s ease-out; }
+
+        @keyframes slideIn {
+            from { transform: translateY(50px); opacity: 0; }
+            to { transform: translateY(0); opacity: 1; }
+        }
+
+        /* Videó konténer */
+        .video-container {
+            width: 100%; height: 280px;
+            border-radius: 15px; overflow: hidden;
+            border: 2px solid var(--accent);
+            box-shadow: 0 0 20px rgba(0,255,170,0.2);
+        }
+
+        .video-container iframe { width: 100%; height: 100%; border: none; }
+
+        /* Navigáció */
+        .controls {
+            position: fixed; bottom: 40px; right: 40px;
+            display: flex; gap: 15px; z-index: 100;
+        }
+
+        .btn {
+            background: transparent;
+            border: 1px solid var(--accent);
+            color: var(--accent);
+            padding: 18px 35px;
+            border-radius: 50px;
+            cursor: pointer;
+            font-family: 'Unbounded';
+            font-size: 0.85rem;
+            transition: 0.3s;
+            text-transform: uppercase;
+        }
+
+        .btn:hover { background: var(--accent); color: #000; box-shadow: 0 0 25px var(--accent); }
+
+        .quiz-btn {
+            display: block;
+            width: 100%;
+            margin: 10px 0;
+            padding: 15px;
+            background: transparent;
+            border: 1px solid var(--accent);
+            color: var(--accent);
+            border-radius: 10px;
+            cursor: pointer;
+            font-family: 'Space Grotesk';
+            font-size: 1rem;
+            transition: 0.3s;
+        }
+
+        .quiz-btn:hover { background: var(--accent); color: #000; }
+        .quiz-btn.correct { background: #00ffaa; color: #000; }
+        .quiz-btn.wrong { background: #ff4444; color: #fff; }
+
+        .progress-bar {
+            position: fixed; top: 0; left: 0; height: 5px;
+            background: var(--accent);
+            width: 0%; transition: 0.4s; z-index: 1000;
+            box-shadow: 0 0 15px var(--accent);
+        }
+
+        .slide-num {
+            position: absolute; top: 40px; left: 40px;
+            font-family: 'Unbounded'; font-size: 6rem;
+            opacity: 0.04; color: var(--accent);
+            pointer-events: none;
+        }
+
+        @media (max-width: 1000px) {
+            .content-split { grid-template-columns: 1fr; }
+            h1 { font-size: 2.8rem; }
+            h2 { font-size: 2.2rem; }
+            .card { padding: 35px; width: 95%; }
+            .img-container, .video-container { height: 220px; }
+        }
+    </style>
+</head>
+<body>
+
+<div class="grid"></div>
+<div class="progress-bar" id="progress"></div>
+
+<div class="presentation-container" id="container" role="main" aria-label="Presentation slides">
+    
+    <section class="slide">
+        <div class="slide-num">01</div>
+        <div class="partner-badge">
+            <img src="jevény.png" alt="Digitális Témahét 2026 Partner">
+        </div>
+        
+        <div class="card">
+            <h1>🤖 AI DIÁK<br><strong style="font-size:0.7em;">SZEMMEL v3.0</strong></h1>
+            <div class="content-split">
+                <div class="text-block">
+                    A mesterséges intelligencia (AI) forradalmasítja a tanulást és a mindennapi feladatokat. Ez a prezentáció bemutatja az AI lehetőségeit diákok számára.
+                    <br><br>
+                    <strong style="color:var(--accent)">Tekintse meg a bevezető videót.</strong>
+                </div>
+                <div class="media-block">
+                    <div class="video-container">
+                        <iframe src="https://www.youtube.com/embed/2ePf9rue1Ao?si=mY4L1T5A8_pL6K3X" title="YouTube video player" allowfullscreen></iframe>
+                    </div>
+                </div>
+            </div>
+        </div>
+    </section>
+
+    <section class="slide">
+        <div class="slide-num">02</div>
+        <div class="card">
+            <h2>MI AZ AZ AI?</h2>
+            <div class="content-split">
+                <div class="text-block">
+A mesterséges intelligencia olyan rendszer, amely gépi tanulás révén feladatokat végez emberi beavatkozás nélkül, például matematikai problémák megoldása és szövegírás.
+                </div>
+                <div class="media-block">
+                    <div class="img-container">
+                        <img src="https://images.unsplash.com/photo-1620712943543-bcc4688e7485?auto=format&fit=crop&w=800&q=80" alt="Mesterséges agy">
+                    </div>
+                </div>
+            </div>
+        </div>
+    </section>
+
+    <section class="slide">
+        <div class="slide-num">03</div>
+        <div class="card">
+            <h2>TANULÁSI SEGÉD</h2>
+            <div class="content-split">
+                <div class="text-block">
+Az AI tutor folyamatosan elérhető, fáradtság nélkül segíti a tanulást matematikában és esszéírásban. 📚
+                </div>
+                <div class="media-block">
+                    <div class="img-container">
+                        <img src="https://images.unsplash.com/photo-1581092918056-0c4c3acd3789?auto=format&fit=crop&w=800&q=80" alt="Diák és robot kéz">
+                    </div>
+                </div>
+            </div>
+        </div>
+    </section>
+
+    <section class="slide">
+        <div class="slide-num">04</div>
+        <div class="card">
+            <h2>ELŐNYÖK</h2>
+            <div class="content-split">
+                <ul class="text-block" style="text-align: left; list-style-type: none; padding-left: 0;">
+<li>🚀 <strong>Személyre szabott magyarázat a tanuló szintjéhez igazítva.</strong></li>
+<li>⚡ <strong>Gyors válaszadás kérdésekre.</strong></li>
+<li>🌍 <strong>Hatékony nyelvtanulási módszerek.</strong></li>
+<li>⏱️ <strong>Időhatékony tanulás jobb eredményekkel.</strong></li>
+                </ul>
+                <div class="media-block">
+                    <div class="img-container">
+                        <img src="https://images.unsplash.com/photo-1516321318423-f06f85e504b3?auto=format&fit=crop&w=800&q=80" alt="Digitális együttműködés">
+                    </div>
+                </div>
+            </div>
+        </div>
+    </section>
+
+    <section class="slide">
+        <div class="slide-num">05</div>
+        <div class="card">
+            <h2>QUIZ: MI AZ AI?</h2>
+            <div class="content-split">
+                <div class="text-block">
+Tesztelje tudását! Mi igaz az AI-ról?
+                    <button class="quiz-btn" onclick="answer('wrong')">Csak sci-fi filmekben létezik.</button>
+                    <button class="quiz-btn" onclick="answer('right')">Segíthet a tanulásban és mindennapi feladatokban.</button>
+                    <button class="quiz-btn" onclick="answer('wrong')">Mindig helyes válaszokat ad.</button>
+                    <p id="quiz-result" style="margin-top: 20px; font-weight: bold;"></p>
+                </div>
+                <div class="media-block">
+                    <div class="img-container">
+                        <img src="https://images.unsplash.com/photo-1555255707-c07966088b7b?auto=format&fit=crop&w=800&q=80" alt="Kérdőjel">
+                    </div>
+                </div>
+            </div>
+        </div>
+    </section>
+
+    <section class="slide">
+        <div class="slide-num">06</div>
+        <div class="card">
+            <h2>KOCKÁZATOK</h2>
+            <div class="content-split">
+                <div class="text-block">
+Kockázatok: téves információk (hallucinációk), adatvédelem, túlzott függőség. Az AI eszközként hatékony, de kritikus gondolkodás szükséges.
+                </div>
+                <div class="media-block">
+                    <div class="img-container">
+                        <img src="https://images.unsplash.com/photo-1523961131990-5ea7c61b2107?auto=format&fit=crop&w=800&q=80" alt="Sötét adat hálózat">
+                    </div>
+                </div>
+            </div>
+        </div>
+    </section>
+
+    
+
+    <!-- ÚJ SLIDE 8: AI TOOLS -->
+    <section class="slide">
+        <div class="slide-num">08</div>
+        <div class="card">
+            <h2>🔥 TOP AI TOOLS DIÁKOKNAK</h2>
+            <div class="content-split">
+                <div class="text-block">
+                    <ul style="text-align: left; list-style-type: none; padding-left: 0;">
+                        <li>📝 <strong>ChatGPT</strong>: szöveggenerálás, magyarázat, ötletelés</li>
+                        <li>🧮 <strong>Photomath/Wolfram</strong>: matematikai feladatok megoldása</li>
+                        <li>🎨 <strong>Midjourney/DALL-E</strong>: képgenerálás prezentációkhoz</li>
+                        <li>👂 <strong>Otter.ai</strong>: automatikus előadások jegyzetelése</li>
+                        <li>🌐 <strong>Perplexity</strong>: pontos kutatási eredmények</li>
+                    </ul>
+                </div>
+                <div class="media-block">
+                    <div class="img-container">
+                        <img loading="lazy" src="https://images.unsplash.com/photo-1700233899362-0cfd97a9ee4e?auto=format&fit=crop&w=800&q=80" alt="AI tool icons">
+                    </div>
+                </div>
+            </div>
+        </div>
+    </section>
+
+    <!-- ÚJ SLIDE 9: STUDENT STORIES -->
+    <section class="slide">
+        <div class="slide-num">09</div>
+        <div class="card">
+            <h2>📈 VALÓS STORYK</h2>
+            <div class="content-split">
+                <div class="text-block">
+                    <p><strong>"A ChatGPT segítségével 3-asból 5-öst kaptam matematikából."</strong> - Alex, 11. A</p>
+                    <p><strong>"Az esszé megírásához 20 perc elég volt, A+ eredmény."</strong> - Kata, egyetemista</p>
+                    <p><strong>"Az AI-val kétszer gyorsabban tanultam angolul."</strong> - Bence, gimnázium</p>
+                    <br>
+                    <em>Tapasztalja meg Ön is az előnyöket.</em>
+                </div>
+                <div class="media-block">
+                    <div class="img-container">
+                        <img loading="lazy" src="https://images.unsplash.com/photo-1522071820081-009f0129c71c?auto=format&fit=crop&w=800&q=80" alt="Happy students">
+                    </div>
+                </div>
+            </div>
+        </div>
+    </section>
+
+    <!-- ÚJ SLIDE 10: FUTURE -->
+    <section class="slide">
+        <div class="slide-num">10</div>
+        <div class="card">
+            <h2>🚀 2025: TE + AI = ?</h2>
+            <div class="content-split">
+                <div class="text-block">
+                    <ul style="text-align: left; list-style-type: none; padding-left: 0;">
+                        <li>🤖 Mobil AI tutor alkalmazások</li>
+                        <li>🎓 Egyéni tananyagok</li>
+                        <li>⚡ Virtuális és kiterjesztett valóság alapú tanulás</li>
+                        <li>💻 Diákok számára AI programozás oktatása</li>
+                    </ul>
+                    <br>
+                    <button class="quiz-btn" style="width:auto; margin-top:20px; padding:20px 40px; font-size:1.2rem;" onclick="startAIChallenge()">AI Kihívás Indítása</button>
+                </div>
+                <div class="media-block">
+                    <div class="video-container">
+                        <iframe loading="lazy" src="https://www.youtube.com/embed/2ePf9rue1Ao?si=mY4L1T5A8_pL6K3X" title="Future of AI education" allow="accelerometer; autoplay; clipboard-write; encrypted-media; gyroscope; picture-in-picture" allowfullscreen></iframe>
+                    </div>
+                </div>
+            </div>
+        </div>
+    </section>
+
+    <section class="slide">
+        <div class="slide-num">07</div>
+        <div class="card">
+            <h2>KÖVETKEZTETÉS</h2>
+            <div class="content-split">
+                <div class="text-block">
+AI = JÖVŐ BELÉPŐJEGY! 💥 Okosan használd, kódolj vele – 2025-ben ez leszel TE! 
+<br><br>
+<strong style="color:var(--accent)">Mi vár rád? Próbáld ki most! 🚀 #AIRevolution</strong>
+                </div>
+                <div class="media-block">
+                    <div class="img-container">
+<img loading="lazy" src="https://images.unsplash.com/photo-1518709268805-4e9042af2176?auto=format&fit=crop&w=800&q=80" alt="Jövőbeli technológia">
+                    </div>
+                </div>
+            </div>
+        </div>
+    </section>
+
+</div>
+
+<div class="controls">
+<button class="btn" onclick="move(-1)">⬅️ ELŐZŐ</button>
+    <button class="btn" onclick="move(1)">KÖVETKEZŐ ➡️</button>
+    <button class="btn" id="fullscreen-btn" onclick="toggleFullscreen()">⛶ FULLSCREEN</button>
+        <span id="slide-counter" style="padding:18px 20px; color:var(--accent); font-family:'Unbounded';">Slide <span id="current-slide">1</span>/10</span>
+        <span id="score-badge" class="btn" style="display:none;background:var(--accent);color:#000;font-size:0.85rem;padding:18px 20px;border-radius:50px;text-transform:uppercase;"></span>
+
+</div>
+
+<script>
+let current = 0;
+    const slides = document.querySelectorAll('.slide');
+    let quizScore = 0;
+    let totalQuizzes = 0;
+    const container = document.getElementById('container');
+    const progress = document.getElementById('progress');
+
+function update() {
+        container.style.transform = `translateX(-${current * 100}vw)`;
+        
+        slides.forEach((s, i) => {
+            s.classList.toggle('active-slide', i === current);
+            if (i === current) {
+                const numEl = s.querySelector('.slide-num');
+                numEl.textContent = String(i+1).padStart(2, '0');
+            }
+        });
+
+        progress.style.width = `${((current + 1) / slides.length) * 100}%`;
+        document.getElementById('current-slide').textContent = current + 1;
+    }
+
+    function toggleFullscreen() {
+        if (!document.fullscreenElement) {
+            document.documentElement.requestFullscreen();
+        } else {
+            document.exitFullscreen();
+        }
+    }
+
+    function move(dir) {
+        current += dir;
+        if (current < 0) current = 0;
+        if (current >= slides.length) current = slides.length - 1;
+        update();
+    }
+
+    // Billentyűzet: Nyilak
+    document.addEventListener('keydown', (e) => {
+        if (e.key === "ArrowRight" || e.key === " ") move(1);
+        if (e.key === "ArrowLeft") move(-1);
+        if (e.key === "Home") { current = 0; update(); }
+        if (e.key === "End") { current = slides.length - 1; update(); }
+        if (e.key.toLowerCase() === 'f') toggleFullscreen();
+    });
+
+    // Touch swipe support
+    let touchStartX = 0;
+    let touchEndX = 0;
+    
+    container.addEventListener('touchstart', e => {
+        touchStartX = e.changedTouches[0].screenX;
+    });
+    
+    container.addEventListener('touchend', e => {
+        touchEndX = e.changedTouches[0].screenX;
+        handleSwipe();
+    });
+    
+    function handleSwipe() {
+        const swipeThreshold = 50;
+        if (touchEndX < touchStartX - swipeThreshold) {
+            move(1);
+        }
+        if (touchEndX > touchStartX + swipeThreshold) {
+            move(-1);
+        }
+    }
+
+    // Kezdő állapot
+    update();
+
+    // Quiz függvény - QVIZ JAVÍTVA
+function answer(result) {
+        const resultEl = document.getElementById('quiz-result');
+        const buttons = document.querySelectorAll('.quiz-btn');
+        
+        totalQuizzes++;
+        
+        // Reset
+        resultEl.textContent = '';
+        resultEl.style.color = '';
+        buttons.forEach(btn => {
+            btn.classList.remove('correct', 'wrong');
+            btn.disabled = false;
+        });
+        
+        if (result === 'right') {
+            quizScore++;
+            resultEl.textContent = `✅ Helyes! (${quizScore}/${totalQuizzes}) Az AI valóban segíthet a tanulásban.`;
+            resultEl.style.color = '#00ffaa';
+            buttons[1].classList.add('correct');
+        } else {
+            resultEl.textContent = `❌ Rossz! (${quizScore}/${totalQuizzes}) A helyes: „Segíthet a tanulásban és mindennapi feladatokban.”`;
+            resultEl.style.color = '#ff4444';
+            event.target.classList.add('wrong');
+        }
+        
+        // Gombok letiltása újrakattintás ellen
+        buttons.forEach(btn => btn.disabled = true);
+        updateScoreDisplay();
+    }
+
+    function updateScoreDisplay() {
+        // Score badge hozzáadása controls-hoz ha van pont
+        let scoreBadge = document.getElementById('score-badge');
+        if (!scoreBadge) {
+            const controls = document.querySelector('.controls');
+            scoreBadge = document.createElement('div');
+            scoreBadge.id = 'score-badge';
+            scoreBadge.className = 'btn';
+            scoreBadge.style.background = 'var(--accent)';
+            scoreBadge.style.color = '#000';
+            controls.appendChild(scoreBadge);
+        }
+        scoreBadge.textContent = `Score: ${quizScore}/${totalQuizzes}`;
+    }
+
+    function startAIChallenge() {
+        if (confirm('Készen állsz az AI Challenge-re? 🚀\\nScore reset + új kérdések!')) {
+            quizScore = 0;
+            totalQuizzes = 0;
+            updateScoreDisplay();
+            alert('Challenge indítva! Oldj meg 3 új kérdést a slide-eken! 💥');
+        }
+    }
+</script>
+
+</body>
+</html>
